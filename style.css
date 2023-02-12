@@ -261,6 +261,7 @@ input[type="password"] {
     color: #fff;
     font-family: 'Roboto', sans-serif;
     border-radius: 2rem;
+    margin-top: 25px;
 }
 
 input.email,
