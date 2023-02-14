@@ -1,11 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+import { getFirestore, collection, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDKd_QWLlXSgWGrTQPbh-6DGrQHd2N_4ck",
     authDomain: "web-app-auth-with-firebase.firebaseapp.com",
-    databaseURL: "https://web-app-auth-with-firebase-default-rtdb.firebaseio.com",
     projectId: "web-app-auth-with-firebase",
     storageBucket: "web-app-auth-with-firebase.appspot.com",
     messagingSenderId: "410265617983",
@@ -13,7 +12,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+const db = getFirestore(app);
 const auth = getAuth(app);
 
 const signup = document.getElementById('signup');
@@ -23,12 +22,12 @@ if (signup) {
         var lastname = document.getElementById('lastname').value;
         var email = document.getElementById('email').value;
         var password = document.getElementById('password').value;
-
+        
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
 
-                set(ref(database, 'users/' + user.uid), {
+                setDoc(doc(db, 'Users', user.uid), {
                     firstname: firstname,
                     lastname: lastname,
                     email: email
@@ -54,7 +53,8 @@ if (login) {
             .then((userCredential) => {
                 const user = userCredential.user;
 
-                update(ref(database, 'users/' + user.uid), {
+                const userRef = doc(db, 'Users', user.uid);
+                updateDoc(userRef, {
                     last_login: new Date().toString()
                 })
                     .then(() => {
@@ -74,6 +74,7 @@ if (login) {
             });
     });
 }
+
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
